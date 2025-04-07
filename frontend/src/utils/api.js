@@ -70,4 +70,98 @@ export const getQRCode = (id) => {
   return `/api/qr/${id}`;
 };
 
+// New JSON Import/Export endpoints
+export const importJSON = (jsonData) => {
+  return api.post('/import-json', jsonData);
+};
+
+// Export JSON function is no longer needed as we're handling download directly in the component
+// Keeping it for backward compatibility
+export const exportJSON = (id) => {
+  console.log('Using exportJSON from API utility is deprecated, use direct download instead');
+  
+  // Create a temporary link element
+  const link = document.createElement('a');
+  link.href = `${api.defaults.baseURL}/export-json/${id}`;
+  link.setAttribute('download', `invoice-${id}.json`);
+  
+  // Add the auth token
+  const token = getToken();
+  if (token) {
+    // For simple downloads, we include the token in the URL to authenticate
+    link.href += `?token=${token}`;
+  }
+  
+  // Append to body, click and remove
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // No need to return anything, as we're handling the download directly
+  return new Promise(resolve => setTimeout(resolve, 100));
+};
+
+export const exportAllJSON = () => {
+  return api.get('/export-all-json', {
+    responseType: 'blob'
+  });
+};
+
+// Invoice status management
+export const markInvoiceExported = (id) => {
+  return api.put(`/invoices/${id}/mark-exported`);
+};
+
+// Edit invoice functions
+export const getInvoiceById = (id) => {
+  return api.get(`/invoices/${id}`);
+};
+
+export const updateInvoice = (id, invoiceData) => {
+  return api.put(`/invoices/${id}`, invoiceData);
+};
+
+export const deleteInvoice = (id) => {
+  return api.delete(`/invoices/${id}`);
+};
+
+// Supplier API functions
+export const getSuppliers = () => {
+  return api.get('/suppliers');
+};
+
+export const createSupplier = (supplierData) => {
+  return api.post('/suppliers', supplierData);
+};
+
+export const updateSupplier = (id, supplierData) => {
+  return api.put(`/suppliers/${id}`, supplierData);
+};
+
+export const deleteSupplier = (id) => {
+  return api.delete(`/suppliers/${id}`);
+};
+
+// Template download
+export const downloadExcelTemplate = () => {
+  // Create a temporary link element
+  const link = document.createElement('a');
+  link.href = `${api.defaults.baseURL.replace('/api', '')}/api/download-template`;
+  link.setAttribute('download', 'invoice_template.xlsx');
+  
+  // Add the auth token if needed
+  const token = getToken();
+  if (token) {
+    link.href += `?token=${token}`;
+  }
+  
+  // Append to body, click and remove
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // No need to return anything, as we're handling the download directly
+  return new Promise(resolve => setTimeout(resolve, 100));
+};
+
 export default api; 

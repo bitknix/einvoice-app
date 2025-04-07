@@ -15,7 +15,55 @@ type Invoice struct {
 	InvoiceNo  string    `json:"invoice_no" db:"invoice_no"`
 	InvoiceJSON json.RawMessage `json:"invoice_json" db:"invoice_json"`
 	QRCode     []byte    `json:"qr_code" db:"qr_code"`
+	Exported   bool      `json:"exported" db:"exported"`
+	ExportedAt *time.Time `json:"exported_at,omitempty" db:"exported_at"`
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+}
+
+// CompanyDetails represents company information for sellers
+type CompanyDetails struct {
+	ID      int    `json:"id" db:"id"`
+	UserID  int    `json:"user_id" db:"user_id"`
+	Name    string `json:"name" db:"name"`
+	GSTIN   string `json:"gstin" db:"gstin"`
+	Address string `json:"address" db:"address"`
+	City    string `json:"city" db:"city"`
+	State   string `json:"state" db:"state"`
+	Pincode int    `json:"pincode" db:"pincode"`
+	Phone   string `json:"phone" db:"phone"`
+	Email   string `json:"email" db:"email"`
+	IsDefault bool `json:"is_default" db:"is_default"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// CustomerDetails represents customer information for buyers
+type CustomerDetails struct {
+	ID      int    `json:"id" db:"id"`
+	UserID  int    `json:"user_id" db:"user_id"`
+	Name    string `json:"name" db:"name"`
+	GSTIN   string `json:"gstin" db:"gstin"`
+	Address string `json:"address" db:"address"`
+	City    string `json:"city" db:"city"`
+	State   string `json:"state" db:"state"`
+	Pincode int    `json:"pincode" db:"pincode"`
+	Phone   string `json:"phone" db:"phone"`
+	Email   string `json:"email" db:"email"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// Item represents a product or service item master
+type ItemMaster struct {
+	ID          int     `json:"id" db:"id"`
+	UserID      int     `json:"user_id" db:"user_id"`
+	Name        string  `json:"name" db:"name"`
+	Description string  `json:"description" db:"description"`
+	HSNCode     string  `json:"hsn_code" db:"hsn_code"`
+	UnitPrice   float64 `json:"unit_price" db:"unit_price"`
+	GSTRate     float64 `json:"gst_rate" db:"gst_rate"`
+	Unit        string  `json:"unit" db:"unit"`
+	IsService   bool    `json:"is_service" db:"is_service"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
 }
 
 // E-Invoice schema as per the GST requirement
