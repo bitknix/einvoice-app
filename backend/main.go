@@ -113,14 +113,14 @@ func main() {
 		auth.DELETE("/suppliers/:id", handleDeleteSupplier)
 	}
 
-	// Get port from environment variable or use default
+	// Get port from environment variable or use default for Render compatibility
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8080" // Default port for local development
 	}
 	
 	// Start server
-	log.Println("Starting server on :" + port)
+	log.Println("Starting server on port :" + port)
 	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
