@@ -2,7 +2,8 @@ import axios from 'axios';
 import { getToken, removeToken } from './auth';
 
 // Get API URL from environment variable or use default
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+const API_URL = `${API_BASE_URL}/api`;
 
 // Create axios instance with baseURL
 const api = axios.create({
@@ -71,8 +72,7 @@ export const downloadInvoices = () => {
 
 export const getQRCode = (id) => {
   // Update to use environment variable for API URL
-  const baseApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-  return `${baseApiUrl}/api/qr/${id}`;
+  return `${API_BASE_URL}/api/qr/${id}`;
 };
 
 // New JSON Import/Export endpoints
@@ -87,7 +87,7 @@ export const exportJSON = (id) => {
   
   // Create a temporary link element
   const link = document.createElement('a');
-  link.href = `${api.defaults.baseURL}/export-json/${id}`;
+  link.href = `${API_URL}/export-json/${id}`;
   link.setAttribute('download', `invoice-${id}.json`);
   
   // Add the auth token
@@ -151,7 +151,7 @@ export const deleteSupplier = (id) => {
 export const downloadExcelTemplate = () => {
   // Create a temporary link element
   const link = document.createElement('a');
-  link.href = `${api.defaults.baseURL.replace('/api', '')}/api/download-template`;
+  link.href = `${API_BASE_URL}/api/download-template`;
   link.setAttribute('download', 'invoice_template.xlsx');
   
   // Add the auth token if needed
