@@ -2,87 +2,57 @@
 
 A modern invoicing application for generating and managing GST-compliant invoices.
 
-## Environment Setup
+## Environment Configuration
+
+The application uses environment variables for configuration. All environment variables are defined in the root `.env.example` file. This is the single source of truth for all environment configurations.
+
+For local development:
+
+1. Create a `.env` file in the root directory with the following variables from `.env.example`:
+   - Database configuration (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME)
+   - JWT configuration (JWT_SECRET)
+   - Server configuration (PORT)
+   - CORS configuration (FRONTEND_ORIGIN, FRONTEND_ORIGIN_DEV)
+
+Note: The `.env` file should never be committed to version control.
+
+## Getting Started
+
+### Prerequisites
+
+- Go 1.18 or higher
+- Node.js 14.x or higher
+- PostgreSQL 12.x or higher
 
 ### Backend Setup
 
-1. Copy the example environment file:
-   ```
-   cp backend/.env.example backend/.env
-   ```
-
-2. Edit the `.env` file with your database and JWT settings:
-   ```
-   # Database Configuration
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=postgres
-   DB_PASSWORD=your-password
-   DB_NAME=einvoice
-
-   # JWT Configuration
-   JWT_SECRET=your-secure-jwt-secret
-
-   # Server Configuration
-   PORT=8080
-   ```
-
-3. Install Go dependencies:
+1. Install Go dependencies:
    ```
    cd backend
    go mod download
    ```
 
-4. Run the backend:
+2. Run the backend:
    ```
    go run main.go
    ```
 
+The backend server will start on the port specified in your `.env` file (default: 8080).
+
 ### Frontend Setup
 
-1. Copy the example environment file:
-   ```
-   cp frontend/.env.example frontend/.env
-   ```
-
-2. Edit the `.env` file with your API URL:
-   ```
-   # For local development
-   REACT_APP_API_URL=http://localhost:8080
-   ```
-
-3. Install dependencies:
+1. Install dependencies:
    ```
    cd frontend
    npm install
    ```
 
-4. Run the frontend:
+2. Run the frontend:
    ```
    npm start
    ```
 
-## Deployment
-
-### Backend Deployment (Render/Railway)
-
-1. Set the following environment variables in your cloud provider dashboard:
-   - `DB_HOST`
-   - `DB_PORT`
-   - `DB_USER`
-   - `DB_PASSWORD`
-   - `DB_NAME`
-   - `JWT_SECRET`
-   - `PORT` (usually set automatically by the platform)
-
-2. Connect your repository and deploy the backend.
-
-### Frontend Deployment (Vercel/Netlify)
-
-1. Set the following environment variables in your deployment dashboard:
-   - `REACT_APP_API_URL` (URL of your deployed backend API)
-
-2. Connect your repository and deploy the frontend.
+The frontend application will run on port 3000.
 
 ## Features
 
@@ -110,70 +80,6 @@ A modern invoicing application for generating and managing GST-compliant invoice
 - Axios for API requests
 - File-Saver for downloads
 - QRCode.react for QR code display
-
-## Getting Started
-
-### Prerequisites
-
-- Go 1.18 or higher
-- Node.js 14.x or higher
-- PostgreSQL 12.x or higher
-
-### Setup Database
-
-1. Create a PostgreSQL database named `einvoice_db`:
-   ```sql
-   CREATE DATABASE einvoice_db;
-   ```
-
-2. Update the database connection settings in `backend/main.go` if needed:
-   ```go
-   const (
-       dbHost     = "localhost"
-       dbPort     = 5432
-       dbUser     = "postgres"
-       dbPassword = "mypass"
-       dbName     = "einvoice_db"
-   )
-   ```
-
-### Run Backend
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Install dependencies:
-   ```bash
-   go mod tidy
-   ```
-
-3. Run the server:
-   ```bash
-   go run main.go
-   ```
-
-The backend server will start on port 8080.
-
-### Run Frontend
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm start
-   ```
-
-The frontend application will run on port 3000 and proxy API requests to the backend.
 
 ## API Endpoints
 
