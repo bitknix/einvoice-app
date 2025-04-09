@@ -18,18 +18,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/skip2/go-qrcode"
 	"github.com/xuri/excelize/v2"
-)
-
-// Database connection parameters
-const (
-	dbHost     = "localhost"
-	dbPort     = 5432
-	dbUser     = "postgres"
-	dbPassword = "root"
-	dbName     = "einvoice"
-	jwtSecret  = "einvoice-app-secret-key" // In production, use environment variable
 )
 
 // Global database connection pool
@@ -69,6 +60,12 @@ type Supplier struct {
 }
 
 func main() {
+	// Load .env file if it exists (for local development)
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found or error loading it. Using environment variables.")
+	}
+	
 	// Initialize database connection
 	initDB()
 	defer dbPool.Close()
@@ -116,15 +113,34 @@ func main() {
 		auth.DELETE("/suppliers/:id", handleDeleteSupplier)
 	}
 
+	// Get port from environment variable or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	
 	// Start server
-	log.Println("Starting server on :8080")
-	if err := router.Run(":8080"); err != nil {
+	log.Println("Starting server on :" + port)
+	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
 
 // initDB establishes a connection to the PostgreSQL database
 func initDB() {
+	// Get database connection parameters from environment variables with defaults
+	dbHost := getEnvWithDefault("DB_HOST", "localhost")
+	dbPortStr := getEnvWithDefault("DB_PORT", "5432")
+	dbUser := getEnvWithDefault("DB_USER", "postgres")
+	dbPassword := getEnvWithDefault("DB_PASSWORD", "root")
+	dbName := getEnvWithDefault("DB_NAME", "einvoice")
+	
+	// Parse port as integer
+	dbPort, err := strconv.Atoi(dbPortStr)
+	if err != nil {
+		log.Fatalf("Invalid DB_PORT value: %v", err)
+	}
+	
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 	
 	config, err := pgxpool.ParseConfig(connStr)
@@ -146,6 +162,26 @@ func initDB() {
 	}
 	
 	log.Println("Connected to database")
+}
+
+// getEnvWithDefault returns the value of the environment variable or a default if not set
+func getEnvWithDefault(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
+// Get JWT secret from environment variable or use default
+func getJWTSecret() string {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		// In production, this should log a warning
+		log.Println("Warning: Using default JWT secret. Set JWT_SECRET environment variable in production.")
+		return "einvoice-app-secret-key"
+	}
+	return secret
 }
 
 // createTables creates the necessary tables if they don't exist
@@ -347,7 +383,7 @@ func authMiddleware() gin.HandlerFunc {
 		claims := &TokenClaims{}
 
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte(jwtSecret), nil
+			return []byte(getJWTSecret()), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -437,7 +473,7 @@ func handleLogin(c *gin.Context) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(jwtSecret))
+	tokenString, err := token.SignedString([]byte(getJWTSecret()))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -1067,7 +1103,7 @@ func validateTokenFromQuery(tokenString string) (int, error) {
 		}
 		
 		// Return the secret key
-		return []byte(jwtSecret), nil
+		return []byte(getJWTSecret()), nil
 	})
 	
 	if err != nil {

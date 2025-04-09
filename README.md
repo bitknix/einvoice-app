@@ -1,6 +1,88 @@
-# E-Invoice Application
+# E-Invoice App
 
-A comprehensive full-stack GST-compliant e-invoicing application built with Go (Gin) for the backend and React.js for the frontend.
+A modern invoicing application for generating and managing GST-compliant invoices.
+
+## Environment Setup
+
+### Backend Setup
+
+1. Copy the example environment file:
+   ```
+   cp backend/.env.example backend/.env
+   ```
+
+2. Edit the `.env` file with your database and JWT settings:
+   ```
+   # Database Configuration
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=postgres
+   DB_PASSWORD=your-password
+   DB_NAME=einvoice
+
+   # JWT Configuration
+   JWT_SECRET=your-secure-jwt-secret
+
+   # Server Configuration
+   PORT=8080
+   ```
+
+3. Install Go dependencies:
+   ```
+   cd backend
+   go mod download
+   ```
+
+4. Run the backend:
+   ```
+   go run main.go
+   ```
+
+### Frontend Setup
+
+1. Copy the example environment file:
+   ```
+   cp frontend/.env.example frontend/.env
+   ```
+
+2. Edit the `.env` file with your API URL:
+   ```
+   # For local development
+   REACT_APP_API_URL=http://localhost:8080
+   ```
+
+3. Install dependencies:
+   ```
+   cd frontend
+   npm install
+   ```
+
+4. Run the frontend:
+   ```
+   npm start
+   ```
+
+## Deployment
+
+### Backend Deployment (Render/Railway)
+
+1. Set the following environment variables in your cloud provider dashboard:
+   - `DB_HOST`
+   - `DB_PORT`
+   - `DB_USER`
+   - `DB_PASSWORD`
+   - `DB_NAME`
+   - `JWT_SECRET`
+   - `PORT` (usually set automatically by the platform)
+
+2. Connect your repository and deploy the backend.
+
+### Frontend Deployment (Vercel/Netlify)
+
+1. Set the following environment variables in your deployment dashboard:
+   - `REACT_APP_API_URL` (URL of your deployed backend API)
+
+2. Connect your repository and deploy the frontend.
 
 ## Features
 

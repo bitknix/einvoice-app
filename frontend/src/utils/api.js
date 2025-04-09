@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { getToken, removeToken } from './auth';
 
+// Get API URL from environment variable or use default
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
 // Create axios instance with baseURL
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api'
+  baseURL: API_URL
 });
 
 // Add interceptor to add token to requests
@@ -67,7 +70,9 @@ export const downloadInvoices = () => {
 };
 
 export const getQRCode = (id) => {
-  return `/api/qr/${id}`;
+  // Update to use environment variable for API URL
+  const baseApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+  return `${baseApiUrl}/api/qr/${id}`;
 };
 
 // New JSON Import/Export endpoints
