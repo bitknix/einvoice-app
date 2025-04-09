@@ -76,15 +76,8 @@ func main() {
 	// Initialize Gin router
 	router := gin.Default()
 
-	// Configure CORS - Make it more permissive for debugging
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept"},
-		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	// Configure CORS with environment variables
+	configureCORS(router)
 
 	// Public routes - MUST be defined BEFORE the authMiddleware
 	router.POST("/api/register", handleRegister)
@@ -1688,4 +1681,33 @@ func handleDownloadExcelTemplate(c *gin.Context) {
 	
 	// Write the Excel data
 	c.Writer.Write(buf.Bytes())
+}
+
+// configureCORS sets up CORS middleware with environment variables
+func configureCORS(router *gin.Engine) {
+	// Get frontend origins from environment variables
+	frontendOrigin := os.Getenv("FRONTEND_ORIGIN")
+	if frontendOrigin == "" {
+		log.Fatal("FRONTEND_ORIGIN environment variable is required")
+	}
+
+	// Get dev origin, default to localhost:3000 if not set
+	frontendDevOrigin := os.Getenv("FRONTEND_ORIGIN_DEV")
+	if frontendDevOrigin == "" {
+		frontendDevOrigin = "http://localhost:3000"
+		log.Printf("FRONTEND_ORIGIN_DEV not set, defaulting to %s", frontendDevOrigin)
+	}
+
+	// Log allowed origins for debugging
+	log.Printf("CORS configured to allow origins: %s, %s", frontendOrigin, frontendDevOrigin)
+
+	// Configure CORS middleware
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{frontendOrigin, frontendDevOrigin},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 } 
